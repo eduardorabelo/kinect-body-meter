@@ -1,0 +1,15 @@
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\bin\Debug\VR-KinectBodyMeter.exe
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\bin\Debug\VR-KinectBodyMeter.pdb
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\BodyMeter.baml
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\BodyMeter.g.cs
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\App.g.cs
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter_MarkupCompile.cache
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter.g.resources
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\VR_KinectBodyMeter.Properties.Resources.resources
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter.exe
+C:\Users\Gosha\AppData\Local\Temporary Projects\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter.pdb
+C:\Users\Gosha\Documents\Faculty\VR-KinectBodyMeter\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter.exe
+C:\Users\Gosha\Documents\Faculty\VR-KinectBodyMeter\VR-KinectBodyMeter\obj\x86\Debug\VR-KinectBodyMeter.pdb
