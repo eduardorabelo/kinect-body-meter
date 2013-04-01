@@ -1,9 +1,10 @@
 ﻿<Window x:Class="VR_KinectBodyMeter.BodyMeter"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="BodyMeter" Height="350" Width="525" Loaded="Window_Loaded">
-    <Grid>
-        <Canvas Name="canvas" Width="640" Height="480" />
+        Title="BodyMeter" Height="945" Width="1110" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid Height="905" Width="1070">
+        <Canvas Name="canvas" Margin="12,134,582,12" />
+        <Image Name ="MaskedColor" Margin="512,12,12,12" />
         <TextBlock Name="tblHeight" Text="Height: N/A" FontSize="25" Margin="5" />
         <TextBlock Name="tblLegLength" Text="Leg: N/A" FontSize="25" Margin="5,97,5,-87" />
         <TextBlock Name="tblArmLength" Text="Arm: N/A" FontSize="25" Margin="5,67,5,-57" />
