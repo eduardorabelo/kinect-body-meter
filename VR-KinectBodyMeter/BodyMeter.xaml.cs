@@ -83,6 +83,10 @@ namespace VR_KinectBodyMeter
         /// Indicates opaque in an opacity mask
         /// </summary>
         private int opaquePixelValue = -1;
+
+        private int[] right;
+        private int[] left;
+        private double heightInPixels;
         #endregion
 
         public BodyMeter()
@@ -214,6 +218,19 @@ namespace VR_KinectBodyMeter
 
                 Array.Clear(this.greenScreenPixelData, 0, this.greenScreenPixelData.Length);
 
+                left = new int[this.depthHeight]; // left side of the picture (right side of human)
+                right = new int[this.depthHeight]; // right side of the picture (left side of human)
+
+                //init result arrays
+                for (int y = 0; y < this.depthHeight; ++y)
+                {
+                    left[y] = -1;
+                    right[y] = -1;
+                }
+
+                int maxY = 0;
+                int minY = this.depthHeight;
+
                 // loop over each row and column of the depth
                 for (int y = 0; y < this.depthHeight; ++y)
                 {
@@ -245,6 +262,27 @@ namespace VR_KinectBodyMeter
                                 // calculate index into the green screen pixel array
                                 int greenScreenIndex = colorInDepthX + (colorInDepthY * this.depthWidth);
 
+                                /*
+                                 * Detect left and right edges. Should be updated to detect space between legs and stuff like that.
+                                 */
+                                if (left[y] == -1)
+                                {
+                                    left[y] = x;
+                                }
+                                right[y] = x;
+
+                                /*
+                                 * Detect maximum and minimum value of Y coordinate for the body. Values are used to calculate pixel - meter ratio.
+                                 */ 
+                                if (y > maxY)
+                                {
+                                    maxY = y;
+                                }
+                                if (y < minY)
+                                {
+                                    minY = y;
+                                }
+
                                 // set opaque
                                 this.greenScreenPixelData[greenScreenIndex] = opaquePixelValue;
 
@@ -255,6 +293,7 @@ namespace VR_KinectBodyMeter
                         }
                     }
                 }
+                heightInPixels = maxY - minY;
             }
 
             // do our processing outside of the using block
@@ -308,6 +347,28 @@ namespace VR_KinectBodyMeter
             tblArmLength.Text = "Arm: " + armLength.ToString() + "m";
             tblLegLength.Text = "Leg: " + legLength.ToString() + "m";
             tblShoulderBreadth.Text = "Chest: " + shoulderBreadth.ToString() + "m";
+
+            /*
+             * Detect width of chest.
+             */
+            Joint chestJoint = skeleton.Joints[JointType.ShoulderCenter].ScaleTo(640, 480);
+            int chestOffset = 10; // move down from chest joint
+            int chestHeight = (int) chestJoint.Position.Y;//TODO check if this works (paint chest line on screen)
+            int width = right[chestHeight + chestOffset] - left[chestHeight + chestOffset];
+            double pixelMeterRatio = height / heightInPixels;
+
+
+            tblWidth.Text = "Width: " + Math.Round((width * pixelMeterRatio), 2) + "m";
+
+            // if (newSensor != null){
+            //    DepthImagePoint depthPoint = this.newSensor.MapSkeletonPointToDepth(
+            //                                                                skelpoint,
+            //                                                                 DepthImageFormat.Resolution640x480Fps30);
+            //    return new System.Drawing.Point(depthPoint.X, depthPoint.Y);
+            //}else
+            //return new System.Drawing.Point();
+        //}
+            
         }
 
         private void DrawJoint(Joint joint)

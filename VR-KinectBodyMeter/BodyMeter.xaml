@@ -9,5 +9,6 @@
         <TextBlock Name="tblLegLength" Text="Leg: N/A" FontSize="25" Margin="5,97,5,-87" />
         <TextBlock Name="tblArmLength" Text="Arm: N/A" FontSize="25" Margin="5,67,5,-57" />
         <TextBlock Name="tblShoulderBreadth" Text="Chest: N/A" FontSize="25" Margin="5,38,5,-28" />
+        <TextBlock Name="tblWidth" Text="Width: N/A" FontSize="25" Margin="5,134,0,-157" />
     </Grid>
 </Window>
