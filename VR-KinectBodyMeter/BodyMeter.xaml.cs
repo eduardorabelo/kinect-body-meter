@@ -84,8 +84,13 @@ namespace VR_KinectBodyMeter
         /// </summary>
         private int opaquePixelValue = -1;
 
-        private int[] right;
-        private int[] left;
+        /// <summary>
+        /// Matrix of widths for person being measured.
+        /// Widths are stored head to feet, in order from left to right
+        /// (from perspective of the device that looks at user).
+        /// Every value in matrix represents width of one body part detected at current height (in pixels).
+        /// </summary>
+        private int[][] widths;
         private double heightInPixels;
         #endregion
 
@@ -218,14 +223,12 @@ namespace VR_KinectBodyMeter
 
                 Array.Clear(this.greenScreenPixelData, 0, this.greenScreenPixelData.Length);
 
-                left = new int[this.depthHeight]; // left side of the picture (right side of human)
-                right = new int[this.depthHeight]; // right side of the picture (left side of human)
-
-                //init result arrays
-                for (int y = 0; y < this.depthHeight; ++y)
+                widths = new int[this.depthHeight][];
+                
+                //initialize matrix
+                for (int i=0; i< this.depthHeight; i++) 
                 {
-                    left[y] = -1;
-                    right[y] = -1;
+                    widths[i][0] = -1;
                 }
 
                 int maxY = 0;
@@ -234,6 +237,13 @@ namespace VR_KinectBodyMeter
                 // loop over each row and column of the depth
                 for (int y = 0; y < this.depthHeight; ++y)
                 {
+                    /*
+                     * Initialize fields being used for single line of viewport height.
+                     */
+                    bool wasOnBody = false; //falg if on previous pixel we were on the body part
+                    int widthIndex = 0; //index of the part that is being measured
+                    int bodyPartWidth = 0; //width for currently measured body part
+
                     for (int x = 0; x < this.depthWidth; ++x)
                     {
                         // calculate index into depth array
@@ -265,15 +275,12 @@ namespace VR_KinectBodyMeter
                                 /*
                                  * Detect left and right edges. Should be updated to detect space between legs and stuff like that.
                                  */
-                                if (left[y] == -1)
-                                {
-                                    left[y] = x;
-                                }
-                                right[y] = x;
+                                bodyPartWidth++;
+                                wasOnBody = true;
 
                                 /*
                                  * Detect maximum and minimum value of Y coordinate for the body. Values are used to calculate pixel - meter ratio.
-                                 */ 
+                                 */
                                 if (y > maxY)
                                 {
                                     maxY = y;
@@ -290,7 +297,26 @@ namespace VR_KinectBodyMeter
                                 // to the left to opaque as well
                                 this.greenScreenPixelData[greenScreenIndex - 1] = opaquePixelValue;
                             }
+                            else
+                            {
+                                if (wasOnBody)
+                                {
+                                    widths[y][widthIndex++] = bodyPartWidth;
+                                    bodyPartWidth = 0;
+                                }
+                                wasOnBody = false;
+                            }
                         }
+
+                        /*
+                         * In case body covers the right side of our viewport (end would not be detected by previous code.
+                         */
+                        if (wasOnBody)
+                        {
+                            widths[y][widthIndex++] = bodyPartWidth;
+                            bodyPartWidth = 0;
+                        }
+                        wasOnBody = false;
                     }
                 }
                 heightInPixels = maxY - minY;
@@ -354,11 +380,40 @@ namespace VR_KinectBodyMeter
             Joint chestJoint = skeleton.Joints[JointType.ShoulderCenter].ScaleTo(640, 480);
             int chestOffset = 10; // move down from chest joint
             int chestHeight = (int) chestJoint.Position.Y;//TODO check if this works (paint chest line on screen)
-            int width = right[chestHeight + chestOffset] - left[chestHeight + chestOffset];
+            int width = widths[chestHeight + chestOffset][1]; //TODO in theory there should be 3 body parts and the one in the middle should be chest. add check for that to avoid exception
             double pixelMeterRatio = height / heightInPixels;
 
+            Joint rightAnkleJoint = skeleton.Joints[JointType.AnkleRight].ScaleTo(640,480);
+            int rightAnkleHeight = (int)rightAnkleJoint.Position.Y;
+            int rightAnkleWidth = widths[rightAnkleHeight][0]; //first is the value of right, because person is shown like it is in mirror (TODO: is this right?)
 
-            tblWidth.Text = "Width: " + Math.Round((width * pixelMeterRatio), 2) + "m";
+            Joint leftAnkleJoint = skeleton.Joints[JointType.AnkleLeft].ScaleTo(640, 480);
+            int leftAnkleHeight = (int)leftAnkleJoint.Position.Y;
+            int leftAnkleWidth = widths[leftAnkleHeight][1];
+
+            Joint rightElbowJoint = skeleton.Joints[JointType.ElbowRight].ScaleTo(640, 480);
+            int rightElbowHeight = (int)rightElbowJoint.Position.Y;
+            int rightElbowWidth = widths[rightElbowHeight][1];
+
+            Joint leftElbowJoint = skeleton.Joints[JointType.ElbowLeft].ScaleTo(640, 480);
+            int leftElbowHeight = (int)leftElbowJoint.Position.Y;
+            int leftElbowWidth = widths[leftElbowHeight][1];
+
+            String widthsString = "";
+            for (int i=0; i< this.depthHeight; i++) 
+            {
+                widthsString += "[ ";
+                int[] currentValues = widths[i];
+                for (int j = 0; j < currentValues.Length; j++)
+                {
+                    int currentWidth = widths[i][j];
+                    widthsString += Math.Round((currentWidth * pixelMeterRatio), 2) + " ";
+                }
+
+                widthsString += "], ";
+            }
+
+            tblWidth.Text = "Width: " + widthsString;
 
             // if (newSensor != null){
             //    DepthImagePoint depthPoint = this.newSensor.MapSkeletonPointToDepth(
